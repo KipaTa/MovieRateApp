@@ -1,8 +1,13 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, Modal } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, Modal, Button } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+
+
 import * as SQLite from'expo-sqlite';
+
+const db = SQLite.openDatabase('mymoviedb.db');
+
 
 
 export default function HomeScreen( ) {
@@ -11,9 +16,42 @@ export default function HomeScreen( ) {
   const [movieDetails, setMovieDetails] = useState([]);
   const [movieId, setMovieId] = useState('');
 
-  const [myMovies, setMyMovies] = useState([]);
+  const [mymovies, setMymovies] = useState([]);
 
   const URL = 'https://image.tmdb.org/t/p/original/';
+
+  // SQLite MyMoviesille
+  useEffect(() => {
+  db.transaction(tx => {
+    tx.executeSql('create table if not exists mymovie (id integer primary key not null, original_title text;');
+  }, null, updateList);
+  }, []);
+
+  const saveItem = () => {
+    db.transaction(tx => {
+      tx.executeSql('insert into mymovie (original_title) values (?);',
+        [movieDetails.original_title]);
+    }, null, updateList)
+  }
+
+  const updateList = () => {
+    db.transaction(tx => {
+      tx.executeSql('select * from mymovie;', [], (_, { rows }) =>
+        setMymovies(rows._array)
+      );
+    }, null, null);
+  }
+
+  const deleteItem = (id) => {
+    db.transaction(
+      tx => { tx.executeSql('delete from mymovie where id = ?;', [id]);
+    }, null, updateList
+    )
+  }
+
+
+// Etusivun elokuvalistaus
+
 
 useEffect(() => {
   fetch(`https://api.themoviedb.org/3/movie/popular?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US&page=1`)
@@ -24,6 +62,7 @@ useEffect(() => {
   });
 }, [])
 
+// Yksittäisen elokuvan tiedot näytettäväksi
 const pressHandler = () => {
   setModalOpen(true);
   fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
@@ -48,7 +87,7 @@ const pressHandler = () => {
               <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + movieDetails.poster_path }}/>
               <Text>Overview: {movieDetails.overview}</Text>
               <Text>Release Date: {movieDetails.release_date}</Text>
-              
+              <Button onPress={saveItem} title="Save to MyMovies" />
               <Ionicons
                 name='close'
                 size={24}
@@ -56,6 +95,23 @@ const pressHandler = () => {
               />
           </View>
           </Modal>
+
+          <View style={styles.myMovies}>
+            <Text>MyMovies</Text>
+
+              <FlatList
+                data={mymovies}
+                keyExtractor={item => item.id.toString()} 
+                renderItem={({ item }) =>
+                  <View style={styles.list}>
+                  <Text>{item.original_title}</Text>
+                  <Text style={{color: 'blue'}} onPress={() => deleteItem(item.id)}>Delete</Text>
+                  </View>
+                }
+              />
+
+        </View>
+         
 
           <View style={styles.new}>
             <Text style={styles.h2}>Popular Movies</Text>
@@ -112,6 +168,11 @@ const pressHandler = () => {
       },
       modalContent: {
         flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+      },
+      myMovies: {
+        flex: 2,
         alignItems: 'center',
         justifyContent: 'center',
       }
