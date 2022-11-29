@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, ScrollView, Text, View, TextInput, Linking, FlatList, Image, TouchableOpacity, Modal, Button } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, TextInput, Linking, FlatList, Image, TouchableOpacity, Modal, Button, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import * as SQLite from'expo-sqlite';
@@ -12,7 +12,6 @@ export default function HomeScreen( ) {
   const [modalOpen, setModalOpen] = useState(false);
   const [data, setData] = useState([]);
   const [movieDetails, setMovieDetails] = useState([]);
-  const [movieId, setMovieId] = useState('');
 
   const [searchData, setSearchData] = useState([]);
   const [keyword, setKeyword] = useState('');
@@ -35,7 +34,7 @@ export default function HomeScreen( ) {
         tx.executeSql('insert into mymovie (original_title, release_date, poster_path) values (?,?,?);',
           [movieDetails.original_title, movieDetails.release_date, movieDetails.poster_path]);
       }, null, updateList)
-     
+      showAlert();
       //console.log(mymovies)
     }
   
@@ -66,14 +65,15 @@ useEffect(() => {
 }, [])
 
 // Yksittäisen elokuvan tiedot näytettäväksi Modalissa
-const pressHandler = () => {
+const pressHandler = (id) => {
+  movieId = id;
   fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
-    .then(response => response.json())
-    .then((json) => setMovieDetails(json))
-    .catch(error => { 
-        Alert.alert('Error', error);
-    });
-    setModalOpen(true);
+  .then(response => response.json())
+  .then((json) => setMovieDetails(json))
+  .catch(error => { 
+      Alert.alert('Error', error);
+  });
+  setModalOpen(true);
 }
 
 // Find movies haku
@@ -98,6 +98,12 @@ const sendMail = () => {
   with love, `)
  };
 
+ const showAlert = () =>{
+  Alert.alert(
+     'Saved to My Movies!'
+  )
+}
+
 
     return (
         <View style={styles.container}>
@@ -116,8 +122,8 @@ const sendMail = () => {
               <Text>Release Date: {movieDetails.release_date}</Text>
               <Text>Original language: {movieDetails.original_language}</Text>
               <Button onPress={saveItem} title="Save to MyMovies" />
-              <Button onPress={sendMail} title="Send Mail" />
-              <Button onPress={(movieDetails) => Linking.openURL(`mailto:?subject=Check this movie!&body=Check this movie ${original_title}`) } title="Tip a Friend!" />
+              <Button onPress={sendMail} title="Tip a Friend!" />
+              
               <Ionicons
                 name='close'
                 size={24}
@@ -127,15 +133,18 @@ const sendMail = () => {
           </Modal>
 
         <View style={styles.myMovies}>
-          <Text>My Movies</Text>
+          <Text style={styles.h2}>My Movies</Text>
           <FlatList 
                 data={mymovies}
                 keyExtractor={item => item.id.toString()} 
                 renderItem={({ item }) =>
                   <View style={styles.list}>
-                  <Text>Nimi: {item.original_title}, {item.release_date} </Text>
-                  <Image style={{width: 50, height: 50}} source={{uri: URL + item.poster_path }}/>
-                  <Text style={{color: 'blue'}} onPress={() => deleteItem(item.id)}>Delete</Text>
+                    <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
+                      <View>
+                        <Text>Title: {item.original_title}  </Text>
+                        <Text>Release date: {item.release_date} </Text>
+                      </View>
+                    <Text style={{color: 'blue'}} onPress={() => deleteItem(item.id)}>Delete</Text>
                   </View>
                 }
               />
@@ -156,7 +165,8 @@ const sendMail = () => {
             horizontal={true}
             renderItem={({ item }) =>
           <View style={styles.list}>
-            <TouchableOpacity onPress={() => {setMovieId(item.id); pressHandler();}}>
+            
+            <TouchableOpacity onPress={() => { pressHandler(item.id)}}>
                 <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
             </TouchableOpacity>
           </View>
@@ -170,12 +180,11 @@ const sendMail = () => {
                   
               <FlatList
                 data={data}
-                horizontal={true}
-                
+                horizontal={true} 
                 renderItem={({ item }) =>
                   <View style={styles.list}>
                     
-                    <TouchableOpacity onPress={() => {setMovieId(item.id); pressHandler();}}>
+                    <TouchableOpacity onPress={() => { pressHandler(item.id) }}>
                       <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
                     </TouchableOpacity>
                   </View>
@@ -215,7 +224,6 @@ const sendMail = () => {
       },
       h2: {
         color: 'darkgrey',
-        
         fontSize: 30
       },
       modalContent: {
@@ -225,11 +233,16 @@ const sendMail = () => {
       },
       myMovies: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
+        backgroundColor: 'lightyellow',
       },
       findMovies:{
         flex: 1,
+        backgroundColor: 'lightblue',
+       
+      },
+      list: {
+        flexDirection: 'row',
+        padding: 5,
       }
       
 
