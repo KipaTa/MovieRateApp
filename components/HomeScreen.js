@@ -1,12 +1,11 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, FlatList, Image, TouchableOpacity, Modal, Button } from 'react-native';
+import { StyleSheet, ScrollView, Text, View, TextInput, Linking, FlatList, Image, TouchableOpacity, Modal, Button } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
 import * as SQLite from'expo-sqlite';
 
 const db = SQLite.openDatabase('mymoviedb.db');
-
 
 
 export default function HomeScreen( ) {
@@ -15,10 +14,14 @@ export default function HomeScreen( ) {
   const [movieDetails, setMovieDetails] = useState([]);
   const [movieId, setMovieId] = useState('');
 
+  const [searchData, setSearchData] = useState([]);
+  const [keyword, setKeyword] = useState('');
+
   const URL = 'https://image.tmdb.org/t/p/original/';
 
   const [mymovies, setMymovies] = useState([]);
 
+ 
   // SQLite MyMoviesille
   useEffect(() => {
     db.transaction(tx => {
@@ -52,8 +55,7 @@ export default function HomeScreen( ) {
     }
 
   
-// Etusivun elokuvalistaus
-
+// Suositut elokuvalistaus
 useEffect(() => {
   fetch(`https://api.themoviedb.org/3/movie/popular?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US&page=1`)
   .then(response => response.json())
@@ -63,7 +65,7 @@ useEffect(() => {
   });
 }, [])
 
-// Yksittäisen elokuvan tiedot näytettäväksi
+// Yksittäisen elokuvan tiedot näytettäväksi Modalissa
 const pressHandler = () => {
   fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
     .then(response => response.json())
@@ -74,10 +76,33 @@ const pressHandler = () => {
     setModalOpen(true);
 }
 
+// Find movies haku
+const getRepositories = () => {
+  fetch(`https://api.themoviedb.org/3/search/movie?query=${keyword}&api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US&page=1&include_adult=false`)
+  .then(response => response.json())
+  .then(data => setSearchData(data.results))
+  .catch(error => { 
+      Alert.alert('Error', error);
+  });
+}
+
+//Lähetä vinkkimaili
+const sendMail = () => {
+  //console.log(movieDetails)
+  Linking.openURL(`mailto:?subject=Check this movie!&body=Hi!
+  I found this cool movie! 
+  Check the details 
+  Title: ${movieDetails.original_title}
+  Homepage: ${movieDetails.homepage} 
+  
+  with love, `)
+ };
 
 
     return (
         <View style={styles.container}>
+          <ScrollView>
+
           <View style={styles.banner}>
             <Text style={styles.bannertext}>MovieRate</Text>
           </View>
@@ -91,6 +116,8 @@ const pressHandler = () => {
               <Text>Release Date: {movieDetails.release_date}</Text>
               <Text>Original language: {movieDetails.original_language}</Text>
               <Button onPress={saveItem} title="Save to MyMovies" />
+              <Button onPress={sendMail} title="Send Mail" />
+              <Button onPress={(movieDetails) => Linking.openURL(`mailto:?subject=Check this movie!&body=Check this movie ${original_title}`) } title="Tip a Friend!" />
               <Ionicons
                 name='close'
                 size={24}
@@ -114,12 +141,37 @@ const pressHandler = () => {
               />
          </View>
 
+      <View style={styles.findMovies}>
+        <Text style={styles.h2}>Search for movies!</Text>
+         <TextInput
+        style={{fontSize: 18, height: 40, width: 300, backgroundColor: 'lightdth: 200,grey'}}
+        placeholder='keyword'
+            onChangeText={text => setKeyword(text)}
+            />
+
+        <Button title="Find Movies" onPress= {getRepositories} />
+        <Text style={styles.h2}>Search for "{keyword}"</Text>
+        <FlatList
+            data={searchData}
+            horizontal={true}
+            renderItem={({ item }) =>
+          <View style={styles.list}>
+            <TouchableOpacity onPress={() => {setMovieId(item.id); pressHandler();}}>
+                <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
+            </TouchableOpacity>
+          </View>
+        }
+      />
+      </View>
+
+
           <View style={styles.new}>
             <Text style={styles.h2}>Popular Movies</Text>
                   
               <FlatList
                 data={data}
-                numColumns={2}
+                horizontal={true}
+                
                 renderItem={({ item }) =>
                   <View style={styles.list}>
                     
@@ -131,11 +183,12 @@ const pressHandler = () => {
               />
               
           </View>
+
+          </ScrollView>
+
         </View>
       );
     }
-
-  
 
     const styles = StyleSheet.create({
       container: {
@@ -149,24 +202,20 @@ const pressHandler = () => {
         backgroundColor: '#fff',
         justifyContent: 'center',
         backgroundColor: 'mediumturquoise',
-        margin: 20,
-        padding: 30,
-        
+        padding: 5
       },
       bannertext: {
         color: 'gold',
-        fontFamily: 'Copperplate-Bold',
         fontSize: 50, 
       },
       new: {
-        flex: 5,
+        flex: 2,
         backgroundColor: '#fff',
-        alignItems: 'center',
-        justifyContent: 'center',
+        
       },
       h2: {
         color: 'darkgrey',
-        fontFamily: 'Copperplate-Bold',
+        
         fontSize: 30
       },
       modalContent: {
@@ -175,10 +224,13 @@ const pressHandler = () => {
         justifyContent: 'center',
       },
       myMovies: {
-        flex: 2,
+        flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
       },
+      findMovies:{
+        flex: 1,
+      }
       
 
     });

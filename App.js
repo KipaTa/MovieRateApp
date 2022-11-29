@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import HomeScreen from './components/HomeScreen';
-import FindMovies from './components/FindMovies';
 import MyMovies from './components/MyMovies';
 
 
@@ -13,8 +12,6 @@ const screenOptions = ({ route }) => ({
 
     if (route.name === 'Home') {
       iconName = 'md-home';
-    } else if (route.name === 'Find Movies') {
-      iconName = 'md-search';
     } else if (route.name === 'My Movies') {
       iconName = 'checkbox-outline';
     }
@@ -30,7 +27,6 @@ export default function App() {
     <NavigationContainer>
       <Tab.Navigator screenOptions={screenOptions}>
         <Tab.Screen name="Home" component={HomeScreen} />
-        <Tab.Screen name="Find Movies" component={FindMovies} />
         <Tab.Screen name="My Movies" component={MyMovies} />
       </Tab.Navigator>
     </NavigationContainer>

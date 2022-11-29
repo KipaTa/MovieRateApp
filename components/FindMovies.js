@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, TextInput, Button, View, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, TextInput, Button, View, FlatList, Image, TouchableOpacity, Modal } from 'react-native';
 
 export default function FindMovies( ) {
 
