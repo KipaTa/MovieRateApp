@@ -5,8 +5,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 import * as SQLite from'expo-sqlite';
 
-const db = SQLite.openDatabase('mymoviedb.db');
 
+const db = SQLite.openDatabase('mymoviedb.db');
 
 export default function HomeScreen( ) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -18,41 +18,19 @@ export default function HomeScreen( ) {
 
   const URL = 'https://image.tmdb.org/t/p/original/';
 
-  const [mymovies, setMymovies] = useState([]);
-
+  
  
-  // SQLite MyMoviesille
-  useEffect(() => {
-    db.transaction(tx => {
-      //tx.executeSql('DROP TABLE IF EXISTS mymovie', []);
-      tx.executeSql('create table if not exists mymovie (id integer primary key not null, original_title text, release_date text, poster_path text);');
-    }, null, updateList);
-    }, []);
+  // Tallenna elokuva MyMoviesille
   
     const saveItem = () => {
       db.transaction(tx => {
-        tx.executeSql('insert into mymovie (original_title, release_date, poster_path) values (?,?,?);',
+        tx.executeSql('insert into mymovie (original_title, release_date, poster_path, rate) values (?,?,?,?);',
           [movieDetails.original_title, movieDetails.release_date, movieDetails.poster_path]);
-      }, null, updateList)
+      }, null, null)
       showAlert();
-      //console.log(mymovies)
     }
   
-    const updateList = () => {
-      db.transaction(tx => {
-        tx.executeSql('select * from mymovie;', [], (_, { rows }) =>
-          setMymovies(rows._array)
-        );
-      }, null, null);
-    }
-  
-    const deleteItem = (id) => {
-      db.transaction(
-        tx => { tx.executeSql('delete from mymovie where id = ?;', [id]);
-      }, null, updateList
-      )
-    }
-
+    
   
 // Suositut elokuvalistaus
 useEffect(() => {
@@ -66,8 +44,8 @@ useEffect(() => {
 
 // Yksittäisen elokuvan tiedot näytettäväksi Modalissa
 const pressHandler = (id) => {
-  movieId = id;
-  fetch(`https://api.themoviedb.org/3/movie/${movieId}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
+  
+  fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
   .then(response => response.json())
   .then((json) => setMovieDetails(json))
   .catch(error => { 
@@ -98,9 +76,10 @@ const sendMail = () => {
   with love, `)
  };
 
+ //Alertti elokuvan lisäämisestä MyMoviesiin
  const showAlert = () =>{
   Alert.alert(
-     'Saved to My Movies!'
+     'Saved succesfully to MyMovies!'
   )
 }
 
@@ -132,23 +111,7 @@ const sendMail = () => {
           </View>
           </Modal>
 
-        <View style={styles.myMovies}>
-          <Text style={styles.h2}>My Movies</Text>
-          <FlatList 
-                data={mymovies}
-                keyExtractor={item => item.id.toString()} 
-                renderItem={({ item }) =>
-                  <View style={styles.list}>
-                    <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
-                      <View>
-                        <Text>Title: {item.original_title}  </Text>
-                        <Text>Release date: {item.release_date} </Text>
-                      </View>
-                    <Text style={{color: 'blue'}} onPress={() => deleteItem(item.id)}>Delete</Text>
-                  </View>
-                }
-              />
-         </View>
+        
 
       <View style={styles.findMovies}>
         <Text style={styles.h2}>Search for movies!</Text>
