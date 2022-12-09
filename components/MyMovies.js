@@ -1,9 +1,13 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { StyleSheet, Text, View,  FlatList, Image, Button, Modal, TouchableOpacity, Alert } from 'react-native';
+import { Text, View,  FlatList, Image, Modal, TouchableOpacity, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 
+import { styles } from '../styles/Styles';
+
 import { Ionicons } from '@expo/vector-icons';
+
+import { Button } from'react-native-elements';
 
 import * as SQLite from'expo-sqlite';
 
@@ -12,6 +16,7 @@ const db2 = SQLite.openDatabase('ratedmovie.db');
 
 export default function MyMovies( ) {
 
+  
   const [mymovies, setMymovies] = useState([]);
   const [ratedMovies, setRatedMovies] = useState([]);
 
@@ -20,7 +25,6 @@ export default function MyMovies( ) {
   const [testiNimi, setTestiNimi] = useState('');
   const [testiPva, setTestiPva] = useState('');
   const [testiUri, setTestiUri] = useState('');
-
   const [testiId, setTestiId] = useState('');
  
 
@@ -142,6 +146,10 @@ export default function MyMovies( ) {
     return (
         <View style={styles.container}>
 
+          <View style={styles.banner}>
+              <Text style={styles.bannertext}>MovieRate</Text>
+          </View>  
+
           <View style={styles.myMovies}>
           <Text style={styles.h2}>My Movies</Text>
           <FlatList 
@@ -150,30 +158,30 @@ export default function MyMovies( ) {
                 renderItem={({ item }) =>
                   <View style={styles.list}>
                     <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
-                      <View>
-                        <Text>Title: {item.original_title}  </Text>
-                        <Text>Release date: {item.release_date} </Text>
+                      <View style={styles.teksti}>
+                        <Text style={{color: 'white'}}>Title: {item.original_title}  </Text>
+                        <Text style={{color: 'white'}}>Release date: {item.release_date} </Text>
                         
                       </View>
-                    <Text style={{color: 'blue'}} onPress={() => deleteItem(item.id) }>Delete</Text>
-                    <Text style={{color: 'orange'}} onPress={() => { rateItem(item.id); setTestiNimi(item.original_title); setTestiPva(item.release_date); setTestiUri(item.poster_path); }}>Rate</Text>
+                    <Button style={{paddingRight: 5}} onPress={() => { rateItem(item.id); setTestiNimi(item.original_title); setTestiPva(item.release_date); setTestiUri(item.poster_path); }} title="Rate"></Button>
+                    <Button onPress={() => deleteItem(item.id) } title="Delete"></Button>
+                    
                   </View>
                 }
               />
-
          </View>
 
          
 
          <Modal visible={modalOpen} animationType='slide'>
               <View style={styles.modalContent}>
-             <Text>Your rate for {testiNimi} </Text> 
-              
+             <Text style={styles.h2}>Your rate for </Text>
+             <Text style={styles.h2}> {testiNimi} </Text> 
+             <Image style={{width: 150, height: 240}} source={{uri: URL + testiUri }}/>
               <CustomRatingBar/>
 
               <Text style={styles.textStyle}>
                 {defaultRating + ' / ' + maxRating.length}
-
               </Text>
 
               <TouchableOpacity
@@ -200,83 +208,26 @@ export default function MyMovies( ) {
 
 
           <View style={styles.rated}>
-          <Text style={styles.h2}>Rated Movies</Text>
-          <FlatList 
-                data={ratedMovies.sort((a, b) => a.rate < b.rate) }
-                
-                renderItem={({ item }) =>
-                  <View style={styles.list}>
-                    <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
-                      <View>
-                        <Text>Title: {item.original_title}  </Text>
-                        <Text>Release date: {item.release_date} </Text>
-                        <Text>Rate: {parseInt(item.rate)} / 5</Text>
-                      </View>
-                    <Text style={{color: 'blue'}} onPress={() => deleteItem2(item.id)}>Delete</Text>
-                  </View>
-                }
-              />
-
+            <Text style={styles.h2}>Rated Movies</Text>
+            <FlatList 
+                  data={ratedMovies.sort((a, b) => a.rate < b.rate) }
+                  
+                  renderItem={({ item }) =>
+                    <View style={styles.list}>
+                      <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
+                        <View style={styles.teksti}>
+                          <Text style={{color: 'white'}}>Title: {item.original_title}  </Text>
+                          <Text style={{color: 'white'}}>Release date: {item.release_date} </Text>
+                          <Text style={{color: 'white'}}>Rate: {parseInt(item.rate)} / 5</Text>
+                        </View>
+                      <Button style={{paddingLeft: 56}} onPress={() => deleteItem2(item.id)} title="Delete"></Button>
+                    </View>
+                  }
+                />
          </View>  
 
-
         </View>
-
-        
-
       );
     }
 
-    const styles = StyleSheet.create({
-      container: {
-        flex: 1,
-      },
- 
-      h2: {
-        color: 'darkgrey',
-        fontSize: 30
-      },
-      
-      myMovies: {
-        flex: 1,
-        backgroundColor: 'lightyellow',
-      },
-      
-      list: {
-        flexDirection: 'row',
-        padding: 5,
-      },
-
-      rated: {
-        flex: 1,
-      },
-      modalContent: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      },
-      customRatingBarStyle: {
-        justifyContent: 'center',
-        flexDirection: 'row',
-        marginTop: 30
-      },
-      starImgStyle: {
-        width: 40,
-        height: 40,
-        resizeMode: 'cover'
-      },
-
-      textStyle: {
-        marginTop: 20
-      },
-
-    buttonStyle: {
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 30,
-      padding: 15,
-      backgroundColor: 'green'
-    }
-
-      
-    });
+    

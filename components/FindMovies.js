@@ -14,10 +14,12 @@ import * as SQLite from'expo-sqlite';
 
 const db = SQLite.openDatabase('mymoviedb.db');
 
-export default function HomeScreen( ) {
+export default function FindMovies( ) {
   const [modalOpen, setModalOpen] = useState(false);
-  const [data, setData] = useState([]);
   const [movieDetails, setMovieDetails] = useState([]);
+
+  const [searchData, setSearchData] = useState([]);
+  const [keyword, setKeyword] = useState('');
 
   const URL = 'https://image.tmdb.org/t/p/original/';
 
@@ -30,16 +32,7 @@ export default function HomeScreen( ) {
     showAlert();
   }
   
-  // Suositut elokuvalistaus
-  useEffect(() => {
-    fetch(`https://api.themoviedb.org/3/movie/popular?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US&page=1`)
-    .then(response => response.json())
-    .then(data => setData(data.results))
-    .catch(error => { 
-        Alert.alert('Error', error);
-    });
-  }, [])
-
+  
 // Yksittäisen elokuvan tiedot näytettäväksi Modalissa
   const pressHandler = (id) => {
   
@@ -52,7 +45,15 @@ export default function HomeScreen( ) {
   setModalOpen(true);
   }
 
-
+// Find movies haku
+const getRepositories = () => {
+  fetch(`https://api.themoviedb.org/3/search/movie?query=${keyword}&api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US&page=1&include_adult=false`)
+  .then(response => response.json())
+  .then(data => setSearchData(data.results))
+  .catch(error => { 
+      Alert.alert('Error', error);
+  });
+  }
 
 //Lähetä vinkkimaili
 const sendMail = () => {
@@ -102,23 +103,32 @@ const sendMail = () => {
           </View>
           </Modal>
 
-      
-          <View style={styles.new}>
-            <Text style={styles.h2}>Popular Movies</Text>
-                  
-              <FlatList
-                data={data}
-                horizontal={true} 
-                renderItem={({ item }) =>
-                  <View style={styles.list}>
-                    
-                    <TouchableOpacity onPress={() => { pressHandler(item.id) }}>
-                      <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
-                    </TouchableOpacity>
-                  </View>
-                  }   
-              />
+        <View style={styles.findMovies}>
+        <Text style={styles.h2}>Search for movies!</Text>
+         
+
+      <Input
+        placeholder='keyword'
+        color= 'white'
+        onChangeText={text => setKeyword(text)}
+      />
+
+        <Button title="Find Movies" onPress= {getRepositories} />
+        
+        <Text style={styles.h2}>Search for "{keyword}"</Text>
+        <FlatList
+            data={searchData}
+            horizontal={true}
+            renderItem={({ item }) =>
+          <View style={styles.list}>
+            
+            <TouchableOpacity onPress={() => { pressHandler(item.id)}}>
+                <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
+            </TouchableOpacity>
           </View>
+        }
+      />
+      </View>
 
           </ScrollView>
 
@@ -127,4 +137,3 @@ const sendMail = () => {
     }
 
  
-
