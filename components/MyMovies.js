@@ -159,11 +159,11 @@ export default function MyMovies( ) {
                   <View style={styles.list}>
                     <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
                       <View style={styles.teksti}>
-                        <Text style={{color: 'white'}}>Title: {item.original_title}  </Text>
-                        <Text style={{color: 'white'}}>Release date: {item.release_date} </Text>
+                        <Text style={styles.text}>Title: {item.original_title}  </Text>
+                        <Text style={styles.text}>Release date: {item.release_date} </Text>
                         
                       </View>
-                    <Button style={{paddingRight: 5}} onPress={() => { rateItem(item.id); setTestiNimi(item.original_title); setTestiPva(item.release_date); setTestiUri(item.poster_path); }} title="Rate"></Button>
+                    <Button buttonStyle={{ backgroundColor: "gold" }} style={{paddingRight: 5}} onPress={() => { rateItem(item.id); setTestiNimi(item.original_title); setTestiPva(item.release_date); setTestiUri(item.poster_path); }} title="Rate"></Button>
                     <Button onPress={() => deleteItem(item.id) } title="Delete"></Button>
                     
                   </View>
@@ -216,11 +216,11 @@ export default function MyMovies( ) {
                     <View style={styles.list}>
                       <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
                         <View style={styles.teksti}>
-                          <Text style={{color: 'white'}}>Title: {item.original_title}  </Text>
-                          <Text style={{color: 'white'}}>Release date: {item.release_date} </Text>
-                          <Text style={{color: 'white'}}>Rate: {parseInt(item.rate)} / 5</Text>
+                          <Text style={styles.text}>Title: {item.original_title}  </Text>
+                          <Text style={styles.text}>Release date: {item.release_date} </Text>
                         </View>
-                      <Button style={{paddingLeft: 56}} onPress={() => deleteItem2(item.id)} title="Delete"></Button>
+                        <Text style={{color: 'gold', fontSize: '20'}}>{parseInt(item.rate)} / 5</Text>
+                      <Button style={{paddingLeft: 18}} onPress={() => deleteItem2(item.id)} title="Delete"></Button>
                     </View>
                   }
                 />

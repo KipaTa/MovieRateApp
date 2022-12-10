@@ -2,17 +2,15 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { ScrollView, View, Text, TextInput, Linking, FlatList, Image, TouchableOpacity, Modal, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
 import { styles } from '../styles/Styles';
 
-import { Input, Button } from'react-native-elements';
-
-
+import { Input, Button, Icon } from'react-native-elements';
 
 import * as SQLite from'expo-sqlite';
 
 
 const db = SQLite.openDatabase('mymoviedb.db');
+
 
 export default function FindMovies( ) {
   const [modalOpen, setModalOpen] = useState(false);
@@ -89,14 +87,36 @@ const sendMail = () => {
               
               <Text style={styles.h2}>{movieDetails.original_title}</Text>
               <Image style={{width: 150, height: 240, margin: 10}} source={{uri: URL + movieDetails.poster_path }}/>
-              <Text>Overview: {movieDetails.overview}</Text>
-              <Text>Release Date: {movieDetails.release_date}</Text>
-              <Text>Original language: {movieDetails.original_language}</Text>
-              <Button onPress={saveItem} title="Save to MyMovies" />
-              <Button onPress={sendMail} title="Tip a Friend!" />
+              <Text style={styles.text}>Overview: {movieDetails.overview}</Text>
+              <Text style={styles.text}>Release Date: {movieDetails.release_date}</Text>
+              <Text style={styles.text}>Original language: {movieDetails.original_language}</Text>
+              <Button 
+                onPress={saveItem} 
+                title=" Save to MyMovies"
+                icon={
+                  <Icon
+                    name="check"
+                    size={20}
+                    color="white"
+                  />
+                }
+              />
+              <Button 
+                buttonStyle={{ backgroundColor: "gold" }} 
+                onPress={sendMail} 
+                title=" Tip a Friend!"
+                icon={
+                  <Icon
+                    name="mail"
+                    size={20}
+                    color="white"
+                  />
+                }
+                 />
               
               <Ionicons
                 name='close'
+                color='white'
                 size={24}
                 onPress={() => setModalOpen(false)}
               />
@@ -113,7 +133,7 @@ const sendMail = () => {
         onChangeText={text => setKeyword(text)}
       />
 
-        <Button title="Find Movies" onPress= {getRepositories} />
+        <Button title="Search" onPress= {getRepositories} />
         
         <Text style={styles.h2}>Search for "{keyword}"</Text>
         <FlatList

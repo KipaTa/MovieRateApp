@@ -4,20 +4,25 @@ export const styles = StyleSheet.create({
     container: {
       flex: 1,
       backgroundColor: 'black',
-      
       justifyContent: 'center',
     },
+
     banner: {
       flex: 1,
-      
       padding: 10,
     },
+
     bannertext: {
       color: 'gold',
       fontSize: 50, 
     },
+
     new: {
       flex: 2,      
+    },
+
+    text: {
+      color: 'white'
     },
     
     h2: {
@@ -25,12 +30,15 @@ export const styles = StyleSheet.create({
       fontSize: 30,
       padding: 5
     },
+    
     modalContent: {
       flex: 1,
       alignItems: 'center',
       justifyContent: 'space-around',
-      padding: 40
+      padding: 40,
+      backgroundColor: 'black',
     },
+    
     myMovies: {
       flex: 4,
       borderBottomWidth: 1,
