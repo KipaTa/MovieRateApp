@@ -2,13 +2,8 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { ScrollView, View, Text, Linking, FlatList, Image, TouchableOpacity, Modal, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-
 import { styles } from '../styles/Styles';
-
 import { Button, Icon } from'react-native-elements';
-
-
-
 import * as SQLite from'expo-sqlite';
 
 
@@ -62,90 +57,88 @@ export default function HomeScreen( ) {
     });
   }, [])
 
-// Yksittäisen elokuvan tiedot näytettäväksi Modalissa
+  // Yksittäisen elokuvan tiedot näytettäväksi Modalissa
   const pressHandler = (id) => {
-  
-  fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
-  .then(response => response.json())
-  .then((json) => setMovieDetails(json))
-  .catch(error => { 
-      Alert.alert('Error', error);
-  });
-  setModalOpen(true);
+    fetch(`https://api.themoviedb.org/3/movie/${id}?api_key=2946b724eb284b32f9e52e2422dcb453&language=en-US`)
+    .then(response => response.json())
+    .then((json) => setMovieDetails(json))
+    .catch(error => { 
+        Alert.alert('Error', error);
+    });
+    setModalOpen(true);
   }
 
+  //Lähetä vinkkimaili
+  const sendMail = () => {
+    Linking.openURL(`mailto:?subject=Check this movie!&body=Hi!
+    I found this cool movie! 
+    Check the details 
+    Title: ${movieDetails.original_title}
+    Homepage: ${movieDetails.homepage} 
+    
+    with love, `)
+  };
 
-
-//Lähetä vinkkimaili
-const sendMail = () => {
-  //console.log(movieDetails)
-  Linking.openURL(`mailto:?subject=Check this movie!&body=Hi!
-  I found this cool movie! 
-  Check the details 
-  Title: ${movieDetails.original_title}
-  Homepage: ${movieDetails.homepage} 
-  
-  with love, `)
- };
-
- //Alertti elokuvan lisäämisestä MyMoviesiin
- const showAlert = () =>{
-  Alert.alert(
-     'Saved succesfully to MyMovies!'
-  )
-  }
+  //Alertti elokuvan lisäämisestä MyMoviesiin
+  const showAlert = () =>{
+    Alert.alert(
+      'Saved succesfully to My Movies!'
+    )
+    }
 
     return (
-        <View style={styles.container}>
+      <View style={styles.container}>
           
 
-          <ScrollView>
+        <ScrollView>
           <View style={styles.banner}>
-              <Text style={styles.bannertext}>MovieRate</Text>
-          </View>  
+                <Text style={styles.bannertext}>MovieRate</Text>
+                <Text style={{color: 'gold', fontStyle: 'italic'}}>~ Home of your movies</Text>
+           </View>  
           
 
           <Modal visible={modalOpen} animationType='slide'>
-              <View style={styles.modalContent}>
+            <View style={styles.modalContent}>
               
-              <Text style={styles.h2}>{movieDetails.original_title}</Text>
-              <Image style={{width: 150, height: 240, margin: 10}} source={{uri: URL + movieDetails.poster_path }}/>
-              
-              <Text style={styles.text}>Overview: {movieDetails.overview}</Text>
-              <Text style={styles.text}>Release Date: {movieDetails.release_date}</Text>
-              <Text style={styles.text}>Original language: {movieDetails.original_language}</Text>
+                <Text style={styles.h2}>{movieDetails.original_title}</Text>
+                <Image style={{width: 150, height: 240, margin: 10}} source={{uri: URL + movieDetails.poster_path }}/>
+                
+                <Text style={styles.text}>Overview: {movieDetails.overview}</Text>
+                <Text style={styles.text}>Release Date: {movieDetails.release_date}</Text>
+                <Text style={styles.text}>Original language: {movieDetails.original_language}</Text>
 
-              <Button 
-                onPress={saveItem} 
-                title=" Save to MyMovies"
-                icon={
-                  <Icon
-                    name="check"
-                    size={20}
-                    color="white"
-                  />
-                }
-              />
-              <Button 
-                buttonStyle={{ backgroundColor: "gold" }} 
-                onPress={sendMail} 
-                title=" Tip a Friend!"
-                icon={
-                  <Icon
-                    name="mail"
-                    size={20}
-                    color="white"
-                  />
-                }
-                 />
+                <Button 
+                  onPress={saveItem} 
+                  title=" Save to MyMovies"
+                  icon={
+                    <Icon
+                      name="check"
+                      size={20}
+                      color="white"
+                    />
+                  }
+                />
 
-              <Ionicons
-                name='close'
-                color='white'
-                size={24}
-                onPress={() => setModalOpen(false)}
-              />
-          </View>
+                <Button 
+                  buttonStyle={{ backgroundColor: "gold" }} 
+                  onPress={sendMail} 
+                  title=" Tip a Friend!"
+                  icon={
+                    <Icon
+                      name="mail"
+                      size={20}
+                      color="white"
+                    />
+                  }
+                  />
+
+                <Ionicons
+                  name='close'
+                  color='white'
+                  size={24}
+                  onPress={() => setModalOpen(false)}
+                />
+            </View>
           </Modal>
 
           <View style={styles.new}>
@@ -178,6 +171,7 @@ const sendMail = () => {
                     <TouchableOpacity onPress={() => { pressHandler(item.id) }}>
                       <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
                     </TouchableOpacity>
+
                   </View>
                   }   
               />
@@ -195,6 +189,7 @@ const sendMail = () => {
                     <TouchableOpacity onPress={() => { pressHandler(item.id) }}>
                       <Image style={{width: 150, height: 240, margin: 8}} source={{uri: URL + item.poster_path }}/>
                     </TouchableOpacity>
+                  
                   </View>
                   }   
               />

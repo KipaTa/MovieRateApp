@@ -2,13 +2,9 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Text, View,  FlatList, Image, Modal, TouchableOpacity, Alert } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
-
 import { styles } from '../styles/Styles';
-
 import { Ionicons } from '@expo/vector-icons';
-
 import { Button } from'react-native-elements';
-
 import * as SQLite from'expo-sqlite';
 
 const db = SQLite.openDatabase('mymoviedb.db');
@@ -16,16 +12,15 @@ const db2 = SQLite.openDatabase('ratedmovie.db');
 
 export default function MyMovies( ) {
 
-  
   const [mymovies, setMymovies] = useState([]);
   const [ratedMovies, setRatedMovies] = useState([]);
 
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [testiNimi, setTestiNimi] = useState('');
-  const [testiPva, setTestiPva] = useState('');
-  const [testiUri, setTestiUri] = useState('');
-  const [testiId, setTestiId] = useState('');
+  const [ratedName, setRatedName] = useState('');
+  const [ratedDate, setRatedDate] = useState('');
+  const [ratedUri, setRatedUri] = useState('');
+  const [ratedId, setRatedId] = useState('');
  
 
   const [defaultRating, setDefaultRating] = useState(1);
@@ -39,8 +34,7 @@ export default function MyMovies( ) {
 
   useFocusEffect(
     React.useCallback(() => {
-        updateList();
-        
+        updateList(); 
     }, [])
   );
   
@@ -95,7 +89,7 @@ export default function MyMovies( ) {
   const saveItem2 = () => {
     db2.transaction(tx => {
       tx.executeSql('insert into ratedmovie (original_title, release_date, poster_path, rate) values (?,?,?,?);',
-        [testiNimi, testiPva, testiUri, defaultRating]);
+        [ratedName, ratedDate, ratedUri, defaultRating]);
     }, null, null)
     updateList2();    
   }
@@ -103,7 +97,7 @@ export default function MyMovies( ) {
 
   //Arvionti
   const rateItem = (id) => {
-    setTestiId(id);
+    setRatedId(id);
     setModalOpen(true);
   }
 
@@ -151,59 +145,61 @@ export default function MyMovies( ) {
           </View>  
 
           <View style={styles.myMovies}>
-          <Text style={styles.h2}>My Movies</Text>
-          <FlatList 
-                data={mymovies}
-                keyExtractor={item => item.id.toString()} 
-                renderItem={({ item }) =>
-                  <View style={styles.list}>
-                    <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
-                      <View style={styles.teksti}>
-                        <Text style={styles.text}>Title: {item.original_title}  </Text>
-                        <Text style={styles.text}>Release date: {item.release_date} </Text>
+            <Text style={styles.h2}>My Movies</Text>
+            
+            <FlatList 
+                  data={mymovies}
+                  keyExtractor={item => item.id.toString()} 
+                  renderItem={({ item }) =>
+                    <View style={styles.list}>
+                      <Image style={{width: 50, height: 75}} source={{uri: URL + item.poster_path }}/>
                         
-                      </View>
-                    <Button buttonStyle={{ backgroundColor: "gold" }} style={{paddingRight: 5}} onPress={() => { rateItem(item.id); setTestiNimi(item.original_title); setTestiPva(item.release_date); setTestiUri(item.poster_path); }} title="Rate"></Button>
-                    <Button onPress={() => deleteItem(item.id) } title="Delete"></Button>
-                    
-                  </View>
-                }
+                        <View style={styles.teksti}>
+                          <Text style={styles.text}>Title: {item.original_title}  </Text>
+                          <Text style={styles.text}>Release date: {item.release_date} </Text> 
+                        </View>
+
+                      <Button buttonStyle={{ backgroundColor: "gold" }} style={{paddingRight: 5}} onPress={() => { rateItem(item.id); setRatedName(item.original_title); setRatedDate(item.release_date); setRatedUri(item.poster_path); }} title="Rate"></Button>
+                      <Button onPress={() => deleteItem(item.id) } title="Delete"></Button>
+                      
+                    </View>
+                  }
               />
          </View>
 
-         
-
          <Modal visible={modalOpen} animationType='slide'>
-              <View style={styles.modalContent}>
+            <View style={styles.modalContent}>
              <Text style={styles.h2}>Your rate for </Text>
-             <Text style={styles.h2}> {testiNimi} </Text> 
-             <Image style={{width: 150, height: 240}} source={{uri: URL + testiUri }}/>
+             <Text style={styles.h2}> {ratedName} </Text> 
+             <Image style={{width: 150, height: 240}} source={{uri: URL + ratedUri }}/>
+              
               <CustomRatingBar/>
 
               <Text style={styles.textStyle}>
                 {defaultRating + ' / ' + maxRating.length}
               </Text>
 
-              <TouchableOpacity
-                activeOpacity={0.7}
+              <Button
+                title='Save Rating'
                 style={styles.buttonStyle}
                 onPress={() => {
                   showAlert();
                   saveItem2();
-                  deleteItem(testiId);
+                  deleteItem(ratedId);
                   setModalOpen(false);
                   }
                   }
-                >
-                  <Text>Save rating!</Text>
-                </TouchableOpacity>
+                />
+                
               
               <Ionicons
                 name='close'
                 size={24}
+                color='white'
                 onPress={() => setModalOpen(false)}
               />
-          </View>
+              
+            </View>
           </Modal>
 
 

@@ -9,7 +9,15 @@ import FindMovies from './components/FindMovies';
 
 
 const screenOptions = ({ route }) => ({
-
+  tabBarStyle:{
+    backgroundColor:'black',
+  },
+  headerStyle: {
+    backgroundColor: 'black',
+  },
+  headerTitleStyle: {
+    color: 'white'
+  },
   tabBarIcon: ({ color, size }) => {
     let iconName;
 
@@ -22,7 +30,7 @@ const screenOptions = ({ route }) => ({
     }
 
     return <Ionicons name={iconName} size={size} color={color} />;
-  }
+  },
 });
 
 const Tab = createBottomTabNavigator();
@@ -32,7 +40,7 @@ export default function App() {
   return (
    
       <NavigationContainer>
-       
+        
           <Tab.Navigator screenOptions={screenOptions} >
             <Tab.Screen name="Home" component={HomeScreen} />
             <Tab.Screen name="Find Movies" component={FindMovies} />

@@ -30,6 +30,12 @@ export const styles = StyleSheet.create({
       fontSize: 30,
       padding: 5
     },
+
+    buttonSearch: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
+    },
     
     modalContent: {
       flex: 1,
@@ -40,10 +46,11 @@ export const styles = StyleSheet.create({
     },
     
     myMovies: {
-      flex: 4,
+      flex: 5,
       borderBottomWidth: 1,
       borderColor: 'white'
     },
+
     findMovies:{
       flex: 1,
     },
@@ -53,13 +60,14 @@ export const styles = StyleSheet.create({
       alignItems: 'left',
       padding: 5,      
     },
+
     teksti: {
       width: 200,
       paddingLeft: 10
     },
 
     rated: {
-        flex: 4,
+        flex: 5,
     },
 
     customRatingBarStyle: {
@@ -75,7 +83,8 @@ export const styles = StyleSheet.create({
     },
 
     textStyle: {
-    marginTop: 20
+    marginTop: 20,
+    color: 'white'
     },
 
     buttonStyle: {
@@ -83,7 +92,6 @@ export const styles = StyleSheet.create({
       alignItems: 'center',
       marginTop: 30,
       padding: 15,
-      backgroundColor: 'green'
     }
 
   });
