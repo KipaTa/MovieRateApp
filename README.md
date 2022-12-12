@@ -13,4 +13,5 @@ User can also send an email from the app to friend to recommend a movie.
 - Ionicons
 
 # Expo QR Code
-![image](https://user-images.githubusercontent.com/98162104/206917465-0fc26ffd-94d4-49f2-862e-48320d1837f1.png)
+![image](https://user-images.githubusercontent.com/98162104/206996848-86359dcc-6760-4a92-9ead-701eda5a6b99.png)
+
