@@ -198,7 +198,6 @@ export default function MyMovies( ) {
                 color='white'
                 onPress={() => setModalOpen(false)}
               />
-              
             </View>
           </Modal>
 
@@ -215,7 +214,7 @@ export default function MyMovies( ) {
                           <Text style={styles.text}>Title: {item.original_title}  </Text>
                           <Text style={styles.text}>Release date: {item.release_date} </Text>
                         </View>
-                        <Text style={{color: 'gold', fontSize: '20'}}>{parseInt(item.rate)} / 5</Text>
+                        <Text style={{color: 'gold', fontSize: 20}}>{parseInt(item.rate)} / 5</Text>
                       <Button style={{paddingLeft: 18}} onPress={() => deleteItem2(item.id)} title="Delete"></Button>
                     </View>
                   }

@@ -124,6 +124,7 @@ export default function FindMovies( ) {
                 <Input
                   placeholder='keyword'
                   color= 'white'
+                  inputStyle={{'color': 'white'}}
                   onChangeText={text => setKeyword(text)}
                 />
 
@@ -132,7 +133,7 @@ export default function FindMovies( ) {
                 </View>
 
                 <Text style={styles.h2}>Results for "{keyword}"</Text>
-                
+
                   <FlatList
                       data={searchData}
                       horizontal={true}

@@ -57,7 +57,7 @@ export const styles = StyleSheet.create({
 
     list: {
       flexDirection: 'row',
-      alignItems: 'left',
+      alignItems: 'center',
       padding: 5,      
     },
 
